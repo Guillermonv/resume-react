@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const content = {
   es: {
@@ -51,7 +51,16 @@ function App() {
   const [isFullStackOpen, setIsFullStackOpen] = useState(false);
   const [isFrontendOpen, setIsFrontendOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(localStorage.getItem('lang') || 'es');
+  const [showTriangle, setShowTriangle] = useState(true);
   const displayContent = content[currentLang];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowTriangle(window.scrollY < 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const toggleFullStack = () => setIsFullStackOpen(!isFullStackOpen);
   const toggleFrontend = () => setIsFrontendOpen(!isFrontendOpen);
@@ -64,7 +73,12 @@ function App() {
         body {
           margin: 0;
           font-family: Arial, sans-serif;
-          background: linear-gradient(to bottom, white 25%, rgb(255, 113, 4) 20%);
+          background: linear-gradient(
+            to bottom,
+            rgb(255, 113, 4) 0px,
+            rgb(255, 113, 4) 200px,
+            #fff 300px
+          );
         }
 
         .app {
@@ -75,28 +89,30 @@ function App() {
         }
 
         header {
-          background: rgb(255, 113, 4);
+          background: transparent;
           color: white;
-          padding: 1rem 5vw;
-          width: 80%;
-          height:22.5%;
+          width: 1000px;
+          height: 250px;
           position: fixed;
           top: 0;
           left: 50%;
           transform: translateX(-50%);
-          z-index: 10;
-          box-shadow: 0 0.2rem 0.5rem rgba(16, 204, 110, 0.1);
+          z-index: 1;
         }
 
         .header-triangle {
           position: fixed;
-          bottom: 0px;
           left: 50%;
           transform: translateX(-50%);
-          width: 10%;
           border-left: 40vw solid transparent;
           border-right: 40vw solid transparent;
-          border-bottom: 40px solid white;
+          border-bottom: 40px solid #e8e8e7;
+          transition: opacity 0.2s ease;
+          opacity: 1;
+        }
+
+        .header-triangle.hidden {
+          opacity: 0;
         }
 
         .header-controls {
@@ -130,6 +146,8 @@ function App() {
         .profile-container {
           text-align: center;
           padding: 1rem;
+          transition: opacity 0.2s ease;
+
         }
 
         .profile-image {
@@ -150,16 +168,18 @@ function App() {
         }
 
         .main-panel {
-          width: 86%;
+          width: 1000px;
           margin: 0 auto;
-          margin-top: 200px; /* espacio para header fijo */
-          padding: 2rem;
-          background: white;
+          margin-top: 280px; /* espacio para header fijo */
+          background: #e8e8e7;
           border-radius: 0.5rem;
-          box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.05);
           display: flex;
           flex-direction: column;
           gap: 2rem;
+          border-left: 4px solid #ff7304;
+          border-right: 4px solid #ff7304;
+          border-bottom: 4px solid #ff7304;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* sombra elegante */
         }
 
         .row {
@@ -170,21 +190,23 @@ function App() {
 
         .panel-left, .panel-left-1 {
           flex: 1;
-          min-width: 30%;
+          min-width: 25%;
           background: white;
           border: 1px solid #eee;
           border-radius: 0.5rem;
           padding: 1.5rem;
+          margin: 0 1rem;
           box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.03);
         }
 
         .panel-right, .panel-right-1 {
           flex: 2;
-          min-width: 60%;
+          min-width: 50%;
           background: white;
           border: 1px solid #eee;
           border-radius: 0.5rem;
           padding: 1.5rem;
+          margin: 0 1rem;
           box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.03);
         }
 
@@ -249,32 +271,49 @@ function App() {
         }
       `}</style>
 
-
       <header>
         <div className="header-controls">
-          <button onClick={handleLanguageChange} className="header-button">{currentLang === 'es' ? 'English' : 'Español'}</button>
-          <button onClick={handleExport} className="header-button">{displayContent.exportButton}</button>
+          <button onClick={handleLanguageChange} className="header-button">
+            {currentLang === 'es' ? 'English' : 'Español'}
+          </button>
+          <button onClick={handleExport} className="header-button">
+            {displayContent.exportButton}
+          </button>
         </div>
+
         <div className="profile-container">
-          <img src="https://placehold.co/96x96/FFA500/fff?text=JP" alt="Foto" className="profile-image" />
+          <img
+            src="https://placehold.co/96x96/FFA500/fff?text=JP"
+            alt="Foto"
+            className="profile-image"
+          />
           <h1 className="name-title">{displayContent.name}</h1>
           <p className="subtitle">{displayContent.title}</p>
         </div>
-        <div className="header-triangle"></div>
+
+        <div className={`header-triangle ${!showTriangle ? 'hidden' : ''}`}></div>
       </header>
 
-
       <div className="main-panel">
-
-
-      <br></br>
-      <br></br>
+        <br />
+        <br />
         <div className="row">
           <div className="panel-left">
             <h2>{displayContent.certificationsTitle}</h2>
-            <ul>{displayContent.certifications.map((cert, i) => (<li key={i}>{cert}</li>))}</ul>
+            <ul>
+              {displayContent.certifications.map((cert, i) => (
+                <li key={i}>{cert}</li>
+              ))}
+            </ul>
+
             <h2>{displayContent.skillsTitle}</h2>
-            <div className="skills-list">{displayContent.skills.map((s, i) => (<span key={i} className="skill-tag">{s}</span>))}</div>
+            <div className="skills-list">
+              {displayContent.skills.map((s, i) => (
+                <span key={i} className="skill-tag">
+                  {s}
+                </span>
+              ))}
+            </div>
           </div>
 
           <div className="panel-right">
@@ -286,11 +325,15 @@ function App() {
                   <b>{displayContent.fullStackTitle}</b>
                   <div>{displayContent.fullStackCompany}</div>
                 </div>
-                <span className={`dropdown-arrow ${isFullStackOpen ? 'rotate' : ''}`}>▼</span>
+                <span className={`dropdown-arrow ${isFullStackOpen ? 'rotate' : ''}`}>
+                  ▼
+                </span>
               </div>
               {isFullStackOpen && (
                 <ul className="dropdown-details">
-                  {displayContent.fullStackDetails.map((d, i) => (<li key={i}>{d}</li>))}
+                  {displayContent.fullStackDetails.map((d, i) => (
+                    <li key={i}>{d}</li>
+                  ))}
                 </ul>
               )}
             </div>
@@ -301,21 +344,37 @@ function App() {
                   <b>{displayContent.frontendTitle}</b>
                   <div>{displayContent.frontendCompany}</div>
                 </div>
-                <span className={`dropdown-arrow ${isFrontendOpen ? 'rotate' : ''}`}>▼</span>
+                <span className={`dropdown-arrow ${isFrontendOpen ? 'rotate' : ''}`}>
+                  ▼
+                </span>
               </div>
               {isFrontendOpen && (
                 <ul className="dropdown-details">
-                  {displayContent.frontendDetails.map((d, i) => (<li key={i}>{d}</li>))}
+                  {displayContent.frontendDetails.map((d, i) => (
+                    <li key={i}>{d}</li>
+                  ))}
                 </ul>
               )}
             </div>
 
             <h2>{displayContent.educationTitle}</h2>
-            <div><b>{displayContent.engineeringDegree}</b><br />{displayContent.engineeringUniversity}</div>
-            <div><b>{displayContent.highSchool}</b><br />{displayContent.highSchoolInstitution}</div>
+            <div>
+              <b>{displayContent.engineeringDegree}</b>
+              <br />
+              {displayContent.engineeringUniversity}
+            </div>
+            <div>
+              <b>{displayContent.highSchool}</b>
+              <br />
+              {displayContent.highSchoolInstitution}
+            </div>
 
             <h2>{displayContent.achievementsTitle}</h2>
-            <ul>{displayContent.achievements.map((a, i) => (<li key={i}>{a}</li>))}</ul>
+            <ul>
+              {displayContent.achievements.map((a, i) => (
+                <li key={i}>{a}</li>
+              ))}
+            </ul>
           </div>
         </div>
 
