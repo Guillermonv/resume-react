@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const content = {
   es: {
     name: "Juan Pérez Developer",
     title: "Desarrollador Full Stack | Innovador | Resolutivo",
-    contactTitle: "Datos de Contacto",
     email: "juan.perez@example.com",
     github: "github.com/juanperez",
     linkedin: "linkedin.com/in/juanperez",
@@ -52,7 +51,17 @@ function App() {
   const [isFullStackOpen, setIsFullStackOpen] = useState(false);
   const [isFrontendOpen, setIsFrontendOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(localStorage.getItem('lang') || 'es');
+  const [showTriangle, setShowTriangle] = useState(true);
   const displayContent = content[currentLang];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowTriangle(window.scrollY < 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const toggleFullStack = () => setIsFullStackOpen(!isFullStackOpen);
   const toggleFrontend = () => setIsFrontendOpen(!isFrontendOpen);
   const handleLanguageChange = () => setCurrentLang(currentLang === 'es' ? 'en' : 'es');
@@ -64,41 +73,46 @@ function App() {
         body {
           margin: 0;
           font-family: Arial, sans-serif;
-          background: linear-gradient(to bottom, white 20%, rgb(255, 113, 4) 20%);
+          background: linear-gradient(
+            to bottom,
+            rgb(255, 113, 4) 0px,
+            rgb(255, 113, 4) 200px,
+            #fff 300px
+          );
         }
 
         .app {
           min-height: 100vh;
           display: flex;
           flex-direction: column;
+          align-items: center;
         }
 
         header {
-          background: rgb(255, 113, 4);
+          background: transparent;
           color: white;
-          border: none;
-          padding: 1rem 5vw;
-          width: 80%;
-          max-width: 80%;
-          max-height: 20%;
-          height: 20%;
-          margin: 0 auto;
-          box-shadow: 0 0 1em rgba(0, 0, 0, 0.05);
-          position: relative;
-          overflow: visible;
+          width: 1000px;
+          height: 250px;
+          position: fixed;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 1;
         }
 
         .header-triangle {
-          position: absolute;
-          bottom: -20px; /* lo movemos fuera del borde inferior */
+          position: fixed;
           left: 50%;
           transform: translateX(-50%);
-          width: 0;
-          height: 0;
           border-left: 40vw solid transparent;
           border-right: 40vw solid transparent;
-          border-bottom: 60px solid white; /* apunta hacia arriba */
-          z-index: 1;
+          border-bottom: 40px solid #e8e8e7;
+          transition: opacity 0.2s ease;
+          opacity: 1;
+        }
+
+        .header-triangle.hidden {
+          opacity: 0;
         }
 
         .header-controls {
@@ -108,11 +122,13 @@ function App() {
           display: flex;
           gap: 0.5rem;
         }
+
         @media print {
           .header-controls {
             display: none;
           }
         }
+
         .header-button {
           background: white;
           color: rgb(255, 113, 4);
@@ -122,13 +138,18 @@ function App() {
           cursor: pointer;
           font-weight: 600;
         }
+
         .header-button:hover {
           background: #ffe5d0;
         }
+
         .profile-container {
           text-align: center;
           padding: 1rem;
+          transition: opacity 0.2s ease;
+
         }
+
         .profile-image {
           width: 6rem;
           height: 6rem;
@@ -136,57 +157,59 @@ function App() {
           object-fit: cover;
           box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.1);
         }
+
         .name-title {
           font-size: 2rem;
           font-weight: 700;
         }
+
         .subtitle {
           color: #fefefe;
         }
-        .contact-section {
-          background: #FFE4B5;
-          padding: 1rem 5vw;
-          margin: 1rem auto;
+
+        .main-panel {
+          width: 1000px;
+          margin: 0 auto;
+          margin-top: 280px; /* espacio para header fijo */
+          background: #e8e8e7;
           border-radius: 0.5rem;
-          width: 80%;
-          max-width: 80%;
-          box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.04);
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+          border-left: 4px solid #ff7304;
+          border-right: 4px solid #ff7304;
+          border-bottom: 4px solid #ff7304;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* sombra elegante */
         }
-        .contact-info-wrapper {
+
+        .row {
           display: flex;
           flex-wrap: wrap;
           gap: 1rem;
-          justify-content: center;
         }
-        .contact-item {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          color: #333;
-        }
-        main {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 1rem;
-          padding: 2rem 5vw;
-          width: 100%;
-          box-sizing: border-box;
-        }
-        .panel, .panel-left, .panel-right, .panel-left-1, .panel-right-1 {
+
+        .panel-left, .panel-left-1 {
+          flex: 1;
+          min-width: 25%;
           background: white;
           border: 1px solid #eee;
           border-radius: 0.5rem;
           padding: 1.5rem;
+          margin: 0 1rem;
           box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.03);
         }
-        .panel-left, .panel-left-1 {
-          flex: 1;
-          min-width: 30%;
-        }
+
         .panel-right, .panel-right-1 {
           flex: 2;
-          min-width: 60%;
+          min-width: 50%;
+          background: white;
+          border: 1px solid #eee;
+          border-radius: 0.5rem;
+          padding: 1.5rem;
+          margin: 0 1rem;
+          box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.03);
         }
+
         h2 {
           font-size: 1.2rem;
           margin-bottom: 0.5rem;
@@ -194,20 +217,24 @@ function App() {
           padding-bottom: 0.25rem;
           color: rgb(255, 113, 4);
         }
+
         .skills-list {
           display: flex;
           flex-wrap: wrap;
           gap: 0.5rem;
         }
+
         .skill-tag {
           background: #FFDAB9;
           padding: 0.25rem 0.5rem;
           border-radius: 0.25rem;
           font-size: 0.85rem;
         }
+
         .dropdown-item {
           margin-bottom: 1rem;
         }
+
         .dropdown-header {
           display: flex;
           justify-content: space-between;
@@ -217,20 +244,25 @@ function App() {
           border-radius: 0.25rem;
           background: #fff5e6;
         }
+
         .dropdown-arrow {
           transition: 0.2s;
         }
+
         .rotate {
           transform: rotate(180deg);
         }
+
         .dropdown-details {
           padding-left: 1rem;
           margin-top: 0.5rem;
         }
+
         @media (max-width: 768px) {
           .panel-left, .panel-right, .panel-left-1, .panel-right-1 {
             flex: 1 1 100%;
           }
+
           .header-controls {
             position: static;
             justify-content: flex-end;
@@ -241,79 +273,126 @@ function App() {
 
       <header>
         <div className="header-controls">
-          <button onClick={handleLanguageChange} className="header-button">{currentLang === 'es' ? 'English' : 'Español'}</button>
-          <button onClick={handleExport} className="header-button">{displayContent.exportButton}</button>
+          <button onClick={handleLanguageChange} className="header-button">
+            {currentLang === 'es' ? 'English' : 'Español'}
+          </button>
+          <button onClick={handleExport} className="header-button">
+            {displayContent.exportButton}
+          </button>
         </div>
+
         <div className="profile-container">
-          <img src="https://placehold.co/96x96/FFA500/fff?text=JP" alt="Foto" className="profile-image" />
+          <img
+            src="https://placehold.co/96x96/FFA500/fff?text=JP"
+            alt="Foto"
+            className="profile-image"
+          />
           <h1 className="name-title">{displayContent.name}</h1>
           <p className="subtitle">{displayContent.title}</p>
         </div>
-        <div className="header-triangle"></div>
+
+        <div className={`header-triangle ${!showTriangle ? 'hidden' : ''}`}></div>
       </header>
 
-      <section className="contact-section">
-        <div className="contact-info-wrapper">
-          <p className="contact-item">📧 {displayContent.email}</p>
-          <p className="contact-item">🐱 {displayContent.github}</p>
-          <p className="contact-item">💼 {displayContent.linkedin}</p>
-          <p className="contact-item">📍 {displayContent.location}</p>
-        </div>
-      </section>
+      <div className="main-panel">
+        <br />
+        <br />
+        <div className="row">
+          <div className="panel-left">
+            <h2>{displayContent.certificationsTitle}</h2>
+            <ul>
+              {displayContent.certifications.map((cert, i) => (
+                <li key={i}>{cert}</li>
+              ))}
+            </ul>
 
-      <main>
-        <div className="panel panel-left">
-          <h2>{displayContent.certificationsTitle}</h2>
-          <ul>{displayContent.certifications.map((cert, i) => (<li key={i}>{cert}</li>))}</ul>
-          <h2>{displayContent.skillsTitle}</h2>
-          <div className="skills-list">{displayContent.skills.map((s, i) => (<span key={i} className="skill-tag">{s}</span>))}</div>
-        </div>
-
-        <div className="panel panel-right">
-          <h2>{displayContent.experienceTitle}</h2>
-          <div className="dropdown-item">
-            <div className="dropdown-header" onClick={toggleFullStack}>
-              <div>
-                <b>{displayContent.fullStackTitle}</b>
-                <div>{displayContent.fullStackCompany}</div>
-              </div>
-              <span className={`dropdown-arrow ${isFullStackOpen ? 'rotate' : ''}`}>▼</span>
+            <h2>{displayContent.skillsTitle}</h2>
+            <div className="skills-list">
+              {displayContent.skills.map((s, i) => (
+                <span key={i} className="skill-tag">
+                  {s}
+                </span>
+              ))}
             </div>
-            {isFullStackOpen && (<ul className="dropdown-details">{displayContent.fullStackDetails.map((d, i) => (<li key={i}>{d}</li>))}</ul>)}
           </div>
 
-          <div className="dropdown-item">
-            <div className="dropdown-header" onClick={toggleFrontend}>
-              <div>
-                <b>{displayContent.frontendTitle}</b>
-                <div>{displayContent.frontendCompany}</div>
+          <div className="panel-right">
+            <h2>{displayContent.experienceTitle}</h2>
+
+            <div className="dropdown-item">
+              <div className="dropdown-header" onClick={toggleFullStack}>
+                <div>
+                  <b>{displayContent.fullStackTitle}</b>
+                  <div>{displayContent.fullStackCompany}</div>
+                </div>
+                <span className={`dropdown-arrow ${isFullStackOpen ? 'rotate' : ''}`}>
+                  ▼
+                </span>
               </div>
-              <span className={`dropdown-arrow ${isFrontendOpen ? 'rotate' : ''}`}>▼</span>
+              {isFullStackOpen && (
+                <ul className="dropdown-details">
+                  {displayContent.fullStackDetails.map((d, i) => (
+                    <li key={i}>{d}</li>
+                  ))}
+                </ul>
+              )}
             </div>
-            {isFrontendOpen && (<ul className="dropdown-details">{displayContent.frontendDetails.map((d, i) => (<li key={i}>{d}</li>))}</ul>)}
+
+            <div className="dropdown-item">
+              <div className="dropdown-header" onClick={toggleFrontend}>
+                <div>
+                  <b>{displayContent.frontendTitle}</b>
+                  <div>{displayContent.frontendCompany}</div>
+                </div>
+                <span className={`dropdown-arrow ${isFrontendOpen ? 'rotate' : ''}`}>
+                  ▼
+                </span>
+              </div>
+              {isFrontendOpen && (
+                <ul className="dropdown-details">
+                  {displayContent.frontendDetails.map((d, i) => (
+                    <li key={i}>{d}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <h2>{displayContent.educationTitle}</h2>
+            <div>
+              <b>{displayContent.engineeringDegree}</b>
+              <br />
+              {displayContent.engineeringUniversity}
+            </div>
+            <div>
+              <b>{displayContent.highSchool}</b>
+              <br />
+              {displayContent.highSchoolInstitution}
+            </div>
+
+            <h2>{displayContent.achievementsTitle}</h2>
+            <ul>
+              {displayContent.achievements.map((a, i) => (
+                <li key={i}>{a}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="panel-left-1">
+            <h2>Proyectos Personales</h2>
+            <p>Este es un ejemplo de contenido adicional alineado con el panel izquierdo.</p>
           </div>
 
-          <h2>{displayContent.educationTitle}</h2>
-          <div><b>{displayContent.engineeringDegree}</b><br/>{displayContent.engineeringUniversity}</div>
-          <div><b>{displayContent.highSchool}</b><br/>{displayContent.highSchoolInstitution}</div>
-
-          <h2>{displayContent.achievementsTitle}</h2>
-          <ul>{displayContent.achievements.map((a, i) => (<li key={i}>{a}</li>))}</ul>
+          <div className="panel-right-1">
+            <h2>Contribuciones Open Source</h2>
+            <ul>
+              <li>Repositorio A - Mejora de rendimiento</li>
+              <li>Repositorio B - Corrección de bugs</li>
+            </ul>
+          </div>
         </div>
-
-        <div className="panel panel-left-1">
-          <h2>Proyectos Personales</h2>
-          <p>Este es un ejemplo de contenido adicional alineado con el panel izquierdo.</p>
-        </div>
-
-        <div className="panel panel-right-1">
-          <h2>Contribuciones Open Source</h2>
-          <ul>
-            <li>Repositorio A - Mejora de rendimiento</li>
-            <li>Repositorio B - Corrección de bugs</li>
-          </ul>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
