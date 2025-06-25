@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { FaFilePdf } from "react-icons/fa";
+import { BsSun, BsMoon } from "react-icons/bs";
 
 const content = {
   es: {
@@ -51,234 +53,130 @@ function App() {
   const [isFullStackOpen, setIsFullStackOpen] = useState(false);
   const [isFrontendOpen, setIsFrontendOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(localStorage.getItem('lang') || 'es');
-  const [showTriangle, setShowTriangle] = useState(true);
   const displayContent = content[currentLang];
+  const [showHeader, setShowHeader] = useState(true);
+  const [triangleHidden, setTriangleHidden] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
 
   useEffect(() => {
+    let lastScrollY = window.scrollY;
+    document.body.classList.toggle("dark-mode", darkMode);
+
     const handleScroll = () => {
-      setShowTriangle(window.scrollY < 50);
+      const currentScrollY = window.scrollY;
+      if (currentScrollY < 10) {
+        setTriangleHidden(false);
+        setShowHeader(true);
+      } else if (currentScrollY > lastScrollY) {
+        setTriangleHidden(true);
+        setTimeout(() => setShowHeader(false), 150);
+      }
+      lastScrollY = currentScrollY;
     };
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+
+  }, [darkMode]);
+
 
   const toggleFullStack = () => setIsFullStackOpen(!isFullStackOpen);
   const toggleFrontend = () => setIsFrontendOpen(!isFrontendOpen);
-  const handleLanguageChange = () => setCurrentLang(currentLang === 'es' ? 'en' : 'es');
   const handleExport = () => window.print();
 
   return (
     <div className="app">
       <style>{`
-        body {
-          margin: 0;
-          font-family: Arial, sans-serif;
-          background: linear-gradient(
-            to bottom,
-            rgb(255, 113, 4) 0px,
-            rgb(255, 113, 4) 200px,
-            #fff 300px
-          );
-        }
-
-        .app {
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        header {
-          background: transparent;
-          color: white;
-          width: 1000px;
-          height: 250px;
-          position: fixed;
-          top: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 1;
-        }
-
-        .header-triangle {
-          position: fixed;
-          left: 50%;
-          transform: translateX(-50%);
-          border-left: 40vw solid transparent;
-          border-right: 40vw solid transparent;
-          border-bottom: 40px solid #e8e8e7;
-          transition: opacity 0.2s ease;
-          opacity: 1;
-        }
-
-        .header-triangle.hidden {
-          opacity: 0;
-        }
-
-        .header-controls {
-          position: absolute;
-          top: 1rem;
-          right: 1rem;
-          display: flex;
-          gap: 0.5rem;
-        }
-
-        @media print {
-          .header-controls {
-            display: none;
-          }
-        }
-
-        .header-button {
-          background: white;
-          color: rgb(255, 113, 4);
-          padding: 0.4rem 0.8rem;
-          border-radius: 0.4rem;
-          border: none;
-          cursor: pointer;
-          font-weight: 600;
-        }
-
-        .header-button:hover {
-          background: #ffe5d0;
-        }
-
-        .profile-container {
-          text-align: center;
-          padding: 1rem;
-          transition: opacity 0.2s ease;
-
-        }
-
-        .profile-image {
-          width: 6rem;
-          height: 6rem;
-          border-radius: 50%;
-          object-fit: cover;
-          box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.1);
-        }
-
-        .name-title {
-          font-size: 2rem;
-          font-weight: 700;
-        }
-
-        .subtitle {
-          color: #fefefe;
-        }
-
-        .main-panel {
-          width: 1000px;
-          margin: 0 auto;
-          margin-top: 280px; /* espacio para header fijo */
-          background: #e8e8e7;
-          border-radius: 0.5rem;
-          display: flex;
-          flex-direction: column;
-          gap: 2rem;
-          border-left: 4px solid #ff7304;
-          border-right: 4px solid #ff7304;
-          border-bottom: 4px solid #ff7304;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* sombra elegante */
-        }
-
-        .row {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 1rem;
-        }
-
-        .panel-left, .panel-left-1 {
-          flex: 1;
-          min-width: 25%;
-          background: white;
-          border: 1px solid #eee;
-          border-radius: 0.5rem;
-          padding: 1.5rem;
-          margin: 0 1rem;
-          box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.03);
-        }
-
-        .panel-right, .panel-right-1 {
-          flex: 2;
-          min-width: 50%;
-          background: white;
-          border: 1px solid #eee;
-          border-radius: 0.5rem;
-          padding: 1.5rem;
-          margin: 0 1rem;
-          box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.03);
-        }
-
-        h2 {
-          font-size: 1.2rem;
-          margin-bottom: 0.5rem;
-          border-bottom: 1px solid #eee;
-          padding-bottom: 0.25rem;
-          color: rgb(255, 113, 4);
-        }
-
-        .skills-list {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-        }
-
-        .skill-tag {
-          background: #FFDAB9;
-          padding: 0.25rem 0.5rem;
-          border-radius: 0.25rem;
-          font-size: 0.85rem;
-        }
-
-        .dropdown-item {
-          margin-bottom: 1rem;
-        }
-
-        .dropdown-header {
-          display: flex;
-          justify-content: space-between;
-          cursor: pointer;
-          padding: 0.5rem;
-          border: 1px solid #ddd;
-          border-radius: 0.25rem;
-          background: #fff5e6;
-        }
-
-        .dropdown-arrow {
-          transition: 0.2s;
-        }
-
-        .rotate {
-          transform: rotate(180deg);
-        }
-
-        .dropdown-details {
-          padding-left: 1rem;
-          margin-top: 0.5rem;
-        }
-
-        @media (max-width: 768px) {
-          .panel-left, .panel-right, .panel-left-1, .panel-right-1 {
-            flex: 1 1 100%;
-          }
-
-          .header-controls {
-            position: static;
-            justify-content: flex-end;
-            margin-top: 1rem;
-          }
-        }
+        body { margin: 0; font-family: Arial, sans-serif; background: linear-gradient(#e8e8e7 0 285px, rgb(255, 113, 4) 250px); }
+        body.dark-mode { background: linear-gradient(#333 0 285px, #555 250px); color: #e0e0e0; }
+        .app { min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+        .header { background: rgb(255, 113, 4); color: white; width: 1000px; height: 250px; position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 1; opacity: 1; transition: opacity 3.8s ease; pointer-events: none; }
+        .header.hidden { opacity: 0; max-height: 0px; }
+        .header-triangle { position: fixed; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 500px solid transparent; border-right: 500px solid transparent; border-bottom: 40px solid #e8e8e7; opacity: 1; background: rgb(255, 113, 4); transition: opacity 0.6s ease; pointer-events: none; }
+        body.dark-mode .header-triangle { border-bottom: 40px solid #333; }
+        .header-controls { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 1rem; pointer-events: all; } /* Increased gap */
+        @media print { .header-controls { display: none; } }
+        .profile-container { text-align: center; padding: 1rem; transition: opacity 0.2s ease; }
+        .profile-image { width: 6rem; height: 6rem; border-radius: 50%; object-fit: cover; box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.1); }
+        .name-title { font-size: 2rem; font-weight: 700; }
+        .subtitle { color: #fefefe; }
+        .main-panel { width: 990px; margin: 0 auto; margin-top: 280px; background: #e8e8e7; display: flex; flex-direction: column; border-left: 4px solid transparent; border-right: 4px solid transparent; border-bottom: 4px solid transparent; }
+        body.dark-mode .main-panel { background: #444; border-color: transparent; }
+        .row { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .panel-left, .panel-left-1, .panel-right, .panel-right-1 { flex: 1; min-width: 25%; background: white; border: 1px solid #eee; border-radius: 0.5rem; padding: 1.5rem; margin: 0 1rem; box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.03); }
+        body.dark-mode .panel-left, body.dark-mode .panel-left-1, body.dark-mode .panel-right, body.dark-mode .panel-right-1 { background: #333; border-color: #555; color: #e0e0e0; }
+        .panel-right, .panel-right-1 { flex: 2; min-width: 50%; }
+        h2 { font-size: 1.2rem; margin-bottom: 0.5rem; border-bottom: 1px solid #eee; padding-bottom: 0.25rem; color: rgb(255, 113, 4); }
+        body.dark-mode h2 { border-color: #777; }
+        .skills-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .skill-tag { background: #FFDAB9; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.85rem; }
+        body.dark-mode .skill-tag { background: #777; color: #fff; }
+        .dropdown-item { margin-bottom: 1rem; }
+        .dropdown-header { display: flex; justify-content: space-between; cursor: pointer; padding: 0.5rem; border: 1px solid #ddd; border-radius: 0.25rem; background: #fff5e6; }
+        body.dark-mode .dropdown-header { background: #555; border-color: #777; color: #e0e0e0; }
+        .dropdown-arrow { transition: 0.2s; }
+        .rotate { transform: rotate(180deg); }
+        .dropdown-details { padding-left: 1rem; margin-top: 0.5rem; }
+        @media (max-width: 768px) { .panel-left, .panel-right, .panel-left-1, .panel-right-1 { flex: 1 1 100%; } }
+        .icon-button { background: white; color: rgb(255, 113, 4); border: none; border-radius: 0.6rem; padding: 0.6rem; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; position: relative; transition: background 0.3s ease, transform 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .icon-button:hover { background: #ffe5d0; transform: translateY(-1px); }
+        .icon-button .label { opacity: 0; max-width: 0; overflow: hidden; white-space: nowrap; transition: opacity 0.3s ease, max-width 0.3s ease; }
+        .icon-button:hover .label { opacity: 1; max-width: 200px; }
+        .icon { font-size: 1.2rem; }
+        .theme-toggle { display: flex; background: white; border-radius: 0.6rem; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .theme-half { background: white; color: #ccc; border: none; padding: 0.6rem; cursor: pointer; font-size: 1.1rem; transition: background 0.3s ease, color 0.3s ease; }
+        .theme-half.active { background: rgb(255, 113, 4); color: white; }
+        .language-toggle { background: white; border-radius: 0.6rem; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.05); display: flex; }
+        .language-flag { background: white; border: none; padding: 0.6rem; cursor: pointer; font-size: 1.1rem; transition: background 0.3s ease; }
+        .language-flag:hover { background: #ffe5d0; }
+        .language-flag img { width: 1.5em; height: auto; display: block; }
       `}</style>
 
-      <header>
+      <header className={`header ${!showHeader ? 'hidden' : ''}`}>
         <div className="header-controls">
-          <button onClick={handleLanguageChange} className="header-button">
-            {currentLang === 'es' ? 'English' : 'Español'}
+          <div className="language-toggle">
+            <button
+              onClick={() => setCurrentLang('es')}
+              className="language-flag"
+              title="Cambiar a Español"
+            >
+              <img src="https://flagcdn.com/w2560/ar.png" alt="Argentina Flag" />
+            </button>
+            <button
+              onClick={() => setCurrentLang('en')}
+              className="language-flag"
+              title="Switch to English"
+            >
+              <img src="https://flagcdn.com/w2560/us.png" alt="USA Flag" />
+            </button>
+          </div>
+
+          <button
+            onClick={handleExport}
+            className="icon-button"
+            title="Exportar a PDF"
+          >
+            <FaFilePdf className="icon" />
+            <span className="label">PDF</span>
           </button>
-          <button onClick={handleExport} className="header-button">
-            {displayContent.exportButton}
-          </button>
+
+          <div className="theme-toggle">
+            <button
+              className={`theme-half ${!darkMode ? 'active' : ''}`}
+              onClick={() => setDarkMode(false)}
+              title="Modo Claro"
+            >
+              <BsSun />
+            </button>
+            <button
+              className={`theme-half ${darkMode ? 'active' : ''}`}
+              onClick={() => setDarkMode(true)}
+              title="Modo Oscuro"
+            >
+              <BsMoon />
+            </button>
+          </div>
         </div>
 
         <div className="profile-container">
@@ -291,12 +189,11 @@ function App() {
           <p className="subtitle">{displayContent.title}</p>
         </div>
 
-        <div className={`header-triangle ${!showTriangle ? 'hidden' : ''}`}></div>
+        <div className={`header-triangle ${triangleHidden ? 'hidden' : ''}`}></div>
       </header>
 
       <div className="main-panel">
-        <br />
-        <br />
+        <br /><br />
         <div className="row">
           <div className="panel-left">
             <h2>{displayContent.certificationsTitle}</h2>
