@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { FaFilePdf } from "react-icons/fa";
+import { BsSunFill, BsMoonStarsFill } from "react-icons/bs";
 
 const content = {
   es: {
@@ -51,16 +53,34 @@ function App() {
   const [isFullStackOpen, setIsFullStackOpen] = useState(false);
   const [isFrontendOpen, setIsFrontendOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState(localStorage.getItem('lang') || 'es');
-  const [showTriangle, setShowTriangle] = useState(true);
   const displayContent = content[currentLang];
+  const [showHeader, setShowHeader] = useState(true);
+  const [triangleHidden, setTriangleHidden] = useState(false); 
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
+    let lastScrollY = window.scrollY;
+    document.body.classList.toggle("dark-mode", darkMode);
+
     const handleScroll = () => {
-      setShowTriangle(window.scrollY < 50);
+      const currentScrollY = window.scrollY;
+  
+      if (currentScrollY < 10) {
+        setTriangleHidden(false);
+        setShowHeader(true);
+      } else if (currentScrollY > lastScrollY) {
+        setTriangleHidden(true);
+        setTimeout(() => {
+          setShowHeader(false);
+        }, 150);
+      }
+  
+      lastScrollY = currentScrollY;
     };
+  
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [darkMode]);
 
   const toggleFullStack = () => setIsFullStackOpen(!isFullStackOpen);
   const toggleFrontend = () => setIsFrontendOpen(!isFrontendOpen);
@@ -73,12 +93,7 @@ function App() {
         body {
           margin: 0;
           font-family: Arial, sans-serif;
-          background: linear-gradient(
-            to bottom,
-            rgb(255, 113, 4) 0px,
-            rgb(255, 113, 4) 200px,
-            #fff 300px
-          );
+          background: linear-gradient(#e8e8e7 0 285px, rgb(255, 113, 4) 250px);
         }
 
         .app {
@@ -88,8 +103,8 @@ function App() {
           align-items: center;
         }
 
-        header {
-          background: transparent;
+        .header {
+          background: rgb(255, 113, 4);
           color: white;
           width: 1000px;
           height: 250px;
@@ -98,19 +113,25 @@ function App() {
           left: 50%;
           transform: translateX(-50%);
           z-index: 1;
+          opacity: 1;
+          transition: opacity 3.8s ease;
+          pointer-events: none;
         }
 
         .header-triangle {
           position: fixed;
           left: 50%;
           transform: translateX(-50%);
-          border-left: 40vw solid transparent;
-          border-right: 40vw solid transparent;
+          width: 0;
+          height: 0;
+          border-left: 500px solid transparent;
+          border-right: 500px solid transparent;
           border-bottom: 40px solid #e8e8e7;
-          transition: opacity 0.2s ease;
           opacity: 1;
+          background: rgb(255, 113, 4);
+          transition: opacity 0.6s ease;
+          pointer-events: none;
         }
-
         .header-triangle.hidden {
           opacity: 0;
         }
@@ -147,7 +168,6 @@ function App() {
           text-align: center;
           padding: 1rem;
           transition: opacity 0.2s ease;
-
         }
 
         .profile-image {
@@ -168,46 +188,53 @@ function App() {
         }
 
         .main-panel {
-          width: 1000px;
+          width: 990px;
           margin: 0 auto;
           margin-top: 280px; /* espacio para header fijo */
           background: #e8e8e7;
-          border-radius: 0.5rem;
           display: flex;
-          flex-direction: column;
-          gap: 2rem;
-          border-left: 4px solid #ff7304;
-          border-right: 4px solid #ff7304;
-          border-bottom: 4px solid #ff7304;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* sombra elegante */
+          gap: 1rem;
+          border-left: 4px solid transparent;
+          border-right: 4px solid transparent;
+          border-bottom: 4px solid transparent;
+          min-height: 600px; /* opcional */
         }
 
-        .row {
+        /* Columna izquierda fija */
+        .left-column {
+          width: 300px;
           display: flex;
-          flex-wrap: wrap;
+          flex-direction: column;
           gap: 1rem;
         }
 
-        .panel-left, .panel-left-1 {
+        /* Columna derecha flexible */
+        .right-column {
           flex: 1;
-          min-width: 25%;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        /* Paneles de izquierda y derecha */
+        .panel-left, .panel-left-1 {
           background: white;
           border: 1px solid #eee;
           border-radius: 0.5rem;
           padding: 1.5rem;
-          margin: 0 1rem;
           box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.03);
+          display: flex;
+          flex-direction: column;
         }
 
         .panel-right, .panel-right-1 {
-          flex: 2;
-          min-width: 50%;
           background: white;
           border: 1px solid #eee;
           border-radius: 0.5rem;
           padding: 1.5rem;
-          margin: 0 1rem;
           box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.03);
+          display: flex;
+          flex-direction: column;
         }
 
         h2 {
@@ -258,26 +285,35 @@ function App() {
           margin-top: 0.5rem;
         }
 
-        @media (max-width: 768px) {
-          .panel-left, .panel-right, .panel-left-1, .panel-right-1 {
-            flex: 1 1 100%;
+        @media (max-width: 990px) {
+          .main-panel {
+            flex-direction: column;
+            width: 95%;
+            margin-top: 200px;
+            min-height: auto;
           }
-
-          .header-controls {
-            position: static;
-            justify-content: flex-end;
-            margin-top: 1rem;
+          .left-column, .right-column {
+            width: 100%;
           }
         }
       `}</style>
 
-      <header>
+      <header className={`header ${!showHeader ? 'hidden' : ''}`}>
         <div className="header-controls">
           <button onClick={handleLanguageChange} className="header-button">
-            {currentLang === 'es' ? 'English' : 'Español'}
+            {currentLang === 'es' ? '🇺🇸 English' : '🇦🇷 Español'}
           </button>
+
           <button onClick={handleExport} className="header-button">
+            <FaFilePdf style={{ marginRight: "0.4rem" }} />
             {displayContent.exportButton}
+          </button>
+
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="header-button theme-switch"
+          >
+            {darkMode ? <BsSunFill /> : <BsMoonStarsFill />}
           </button>
         </div>
 
@@ -291,31 +327,34 @@ function App() {
           <p className="subtitle">{displayContent.title}</p>
         </div>
 
-        <div className={`header-triangle ${!showTriangle ? 'hidden' : ''}`}></div>
+        <div className={`header-triangle ${triangleHidden ? 'hidden' : ''}`}></div>
       </header>
 
       <div className="main-panel">
-        <br />
-        <br />
-        <div className="row">
+        {/* Columna izquierda: todos los paneles apilados vertical */}
+        <div className="left-column">
           <div className="panel-left">
-            <h2>{displayContent.certificationsTitle}</h2>
+
+            <h2>{displayContent.skillsTitle}</h2>
+            <div className="skills-list">
+              {displayContent.skills.map((s, i) => (
+                <span key={i} className="skill-tag">{s}</span>
+              ))}
+            </div>
+          </div>
+          <div className="panel-left-1">
+          
+          <h2>{displayContent.certificationsTitle}</h2>
             <ul>
               {displayContent.certifications.map((cert, i) => (
                 <li key={i}>{cert}</li>
               ))}
             </ul>
-
-            <h2>{displayContent.skillsTitle}</h2>
-            <div className="skills-list">
-              {displayContent.skills.map((s, i) => (
-                <span key={i} className="skill-tag">
-                  {s}
-                </span>
-              ))}
-            </div>
           </div>
+        </div>
 
+        {/* Columna derecha: todos los paneles apilados vertical */}
+        <div className="right-column">
           <div className="panel-right">
             <h2>{displayContent.experienceTitle}</h2>
 
@@ -375,13 +414,6 @@ function App() {
                 <li key={i}>{a}</li>
               ))}
             </ul>
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="panel-left-1">
-            <h2>Proyectos Personales</h2>
-            <p>Este es un ejemplo de contenido adicional alineado con el panel izquierdo.</p>
           </div>
 
           <div className="panel-right-1">
