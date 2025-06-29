@@ -106,7 +106,7 @@ function App() {
         .header {
           background: rgb(255, 113, 4);
           color: white;
-          width: 1000px;
+          width: 1300px;
           height: 250px;
           position: fixed;
           top: 0;
@@ -122,7 +122,7 @@ function App() {
           position: fixed;
           left: 50%;
           transform: translateX(-50%);
-          width: 0;
+          width: 302px;
           height: 0;
           border-left: 500px solid transparent;
           border-right: 500px solid transparent;
@@ -188,7 +188,7 @@ function App() {
         }
 
         .main-panel {
-          width: 990px;
+          width: 1300px;
           margin: 0 auto;
           margin-top: 280px; /* espacio para header fijo */
           background: #e8e8e7;
@@ -203,7 +203,10 @@ function App() {
         /* Columna izquierda fija */
         .left-column {
           width: 300px;
-          display: flex;
+          margin-top: 30px;
+         margin-bottom: 30px;
+         margin-left: 30px;
+
           flex-direction: column;
           gap: 1rem;
         }
@@ -211,13 +214,14 @@ function App() {
         /* Columna derecha flexible */
         .right-column {
           flex: 1;
-          display: flex;
+          margin-top: 30px;
+          margin-right: 30px;
+          margin-bottom: 30px;
           flex-direction: column;
-          gap: 1rem;
         }
 
         /* Paneles de izquierda y derecha */
-        .panel-left, .panel-left-1 {
+        .panel-left, .panel-left-1, .panel-left-2{
           background: white;
           border: 1px solid #eee;
           border-radius: 0.5rem;
@@ -227,7 +231,7 @@ function App() {
           flex-direction: column;
         }
 
-        .panel-right, .panel-right-1 {
+        .panel-right, .panel-right-1 , .panel-right-2{
           background: white;
           border: 1px solid #eee;
           border-radius: 0.5rem;
@@ -342,8 +346,16 @@ function App() {
               ))}
             </div>
           </div>
+          <br></br>
           <div className="panel-left-1">
           
+          <h2>{displayContent.certificationsTitle}</h2>
+       Ingles <br></br> Español
+          </div>
+          <br></br>
+
+          <div className="panel-left-2">
+
           <h2>{displayContent.certificationsTitle}</h2>
             <ul>
               {displayContent.certifications.map((cert, i) => (
@@ -352,7 +364,6 @@ function App() {
             </ul>
           </div>
         </div>
-
         {/* Columna derecha: todos los paneles apilados vertical */}
         <div className="right-column">
           <div className="panel-right">
@@ -396,7 +407,123 @@ function App() {
               )}
             </div>
 
-            <h2>{displayContent.educationTitle}</h2>
+            <div className="dropdown-item">
+              <div className="dropdown-header" onClick={toggleFullStack}>
+                <div>
+                  <b>{displayContent.fullStackTitle}</b>
+                  <div>{displayContent.fullStackCompany}</div>
+                </div>
+                <span className={`dropdown-arrow ${isFullStackOpen ? 'rotate' : ''}`}>
+                  ▼
+                </span>
+              </div>
+              {isFullStackOpen && (
+                <ul className="dropdown-details">
+                  {displayContent.fullStackDetails.map((d, i) => (
+                    <li key={i}>{d}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="dropdown-item">
+              <div className="dropdown-header" onClick={toggleFullStack}>
+                <div>
+                  <b>{displayContent.fullStackTitle}</b>
+                  <div>{displayContent.fullStackCompany}</div>
+                </div>
+                <span className={`dropdown-arrow ${isFullStackOpen ? 'rotate' : ''}`}>
+                  ▼
+                </span>
+              </div>
+              {isFullStackOpen && (
+                <ul className="dropdown-details">
+                  {displayContent.fullStackDetails.map((d, i) => (
+                    <li key={i}>{d}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="dropdown-item">
+              <div className="dropdown-header" onClick={toggleFullStack}>
+                <div>
+                  <b>{displayContent.fullStackTitle}</b>
+                  <div>{displayContent.fullStackCompany}</div>
+                </div>
+                <span className={`dropdown-arrow ${isFullStackOpen ? 'rotate' : ''}`}>
+                  ▼
+                </span>
+              </div>
+              {isFullStackOpen && (
+                <ul className="dropdown-details">
+                  {displayContent.fullStackDetails.map((d, i) => (
+                    <li key={i}>{d}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="dropdown-item">
+              <div className="dropdown-header" onClick={toggleFullStack}>
+                <div>
+                  <b>{displayContent.fullStackTitle}</b>
+                  <div>{displayContent.fullStackCompany}</div>
+                </div>
+                <span className={`dropdown-arrow ${isFullStackOpen ? 'rotate' : ''}`}>
+                  ▼
+                </span>
+              </div>
+              {isFullStackOpen && (
+                <ul className="dropdown-details">
+                  {displayContent.fullStackDetails.map((d, i) => (
+                    <li key={i}>{d}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="dropdown-item">
+              <div className="dropdown-header" onClick={toggleFullStack}>
+                <div>
+                  <b>{displayContent.fullStackTitle}</b>
+                  <div>{displayContent.fullStackCompany}</div>
+                </div>
+                <span className={`dropdown-arrow ${isFullStackOpen ? 'rotate' : ''}`}>
+                  ▼
+                </span>
+              </div>
+              {isFullStackOpen && (
+                <ul className="dropdown-details">
+                  {displayContent.fullStackDetails.map((d, i) => (
+                    <li key={i}>{d}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="dropdown-item">
+              <div className="dropdown-header" onClick={toggleFullStack}>
+                <div>
+                  <b>{displayContent.fullStackTitle}</b>
+                  <div>{displayContent.fullStackCompany}</div>
+                </div>
+                <span className={`dropdown-arrow ${isFullStackOpen ? 'rotate' : ''}`}>
+                  ▼
+                </span>
+              </div>
+              {isFullStackOpen && (
+                <ul className="dropdown-details">
+                  {displayContent.fullStackDetails.map((d, i) => (
+                    <li key={i}>{d}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+<br></br>
+          <div className="panel-right-1">
+          <h2>{displayContent.educationTitle}</h2>
             <div>
               <b>{displayContent.engineeringDegree}</b>
               <br />
@@ -407,22 +534,16 @@ function App() {
               <br />
               {displayContent.highSchoolInstitution}
             </div>
-
-            <h2>{displayContent.achievementsTitle}</h2>
+          </div>
+          <br></br>
+          <div className="panel-right-2">          
+          <h2>{displayContent.achievementsTitle}</h2>
             <ul>
               {displayContent.achievements.map((a, i) => (
                 <li key={i}>{a}</li>
               ))}
             </ul>
-          </div>
-
-          <div className="panel-right-1">
-            <h2>Contribuciones Open Source</h2>
-            <ul>
-              <li>Repositorio A - Mejora de rendimiento</li>
-              <li>Repositorio B - Corrección de bugs</li>
-            </ul>
-          </div>
+          </div>      
         </div>
       </div>
     </div>
