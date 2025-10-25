@@ -60,28 +60,45 @@ function App() {
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
-    document.body.classList.toggle("dark-mode", darkMode);
-
+    let hideTimeout;
+  
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
   
+      // Mostrar header si vuelve arriba
       if (currentScrollY < 10) {
+        clearTimeout(hideTimeout);
         setTriangleHidden(false);
         setShowHeader(true);
-      } else if (currentScrollY > lastScrollY) {
+      } 
+      // Scroll hacia abajo
+      else if (currentScrollY > lastScrollY) {
         setTriangleHidden(true);
-        setTimeout(() => {
+        clearTimeout(hideTimeout);
+  
+        // Esperar 3 segundos para ocultar el header
+        hideTimeout = setTimeout(() => {
           setShowHeader(false);
-        }, 150);
+        }, 1000);
+      } 
+      // Scroll hacia arriba (mostrar inmediatamente)
+      else if (currentScrollY < lastScrollY) {
+        clearTimeout(hideTimeout);
+        setTriangleHidden(false);
+        setShowHeader(true);
       }
   
       lastScrollY = currentScrollY;
     };
   
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [darkMode]);
-
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(hideTimeout);
+    };
+  }, []);
+  
+  
   const toggleFullStack = () => setIsFullStackOpen(!isFullStackOpen);
   const toggleFrontend = () => setIsFrontendOpen(!isFrontendOpen);
   const handleLanguageChange = () => setCurrentLang(currentLang === 'es' ? 'en' : 'es');
@@ -113,10 +130,15 @@ function App() {
           left: 50%;
           transform: translateX(-50%);
           z-index: 1;
+          transition: opacity 0.8s ease, top 0.8s ease;
           opacity: 1;
-          transition: opacity 3.8s ease;
-          pointer-events: none;
         }
+
+        .header.hidden {
+          opacity: 0;
+          top: -260px; /* se desliza hacia arriba al ocultarse */
+        }
+
 
         .header-triangle {
           position: fixed;
@@ -200,20 +222,20 @@ function App() {
           min-height: 600px; /* opcional */
         }
 
-        /* Columna izquierda fija */
         .left-column {
           width: 300px;
           display: flex;
           flex-direction: column;
           gap: 1rem;
+          padding-left: 1rem; /* agrega espacio interno a la izquierda */
         }
 
-        /* Columna derecha flexible */
         .right-column {
           flex: 1;
           display: flex;
           flex-direction: column;
           gap: 1rem;
+          padding-right: 1rem; /* agrega espacio interno a la derecha */
         }
 
         /* Paneles de izquierda y derecha */
@@ -298,7 +320,7 @@ function App() {
         }
       `}</style>
 
-      <header className={`header ${!showHeader ? 'hidden' : ''}`}>
+        <header className={`header ${!showHeader ? 'hidden' : ''}`}>
         <div className="header-controls">
           <button onClick={handleLanguageChange} className="header-button">
             {currentLang === 'es' ? '🇺🇸 English' : '🇦🇷 Español'}
@@ -331,10 +353,13 @@ function App() {
       </header>
 
       <div className="main-panel">
+      
+
         {/* Columna izquierda: todos los paneles apilados vertical */}
         <div className="left-column">
+        <br></br>        <br></br>
           <div className="panel-left">
-
+          <br></br>        <br></br>
             <h2>{displayContent.skillsTitle}</h2>
             <div className="skills-list">
               {displayContent.skills.map((s, i) => (
@@ -355,6 +380,8 @@ function App() {
 
         {/* Columna derecha: todos los paneles apilados vertical */}
         <div className="right-column">
+        <br></br>        <br></br>
+
           <div className="panel-right">
             <h2>{displayContent.experienceTitle}</h2>
 
